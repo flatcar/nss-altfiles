@@ -16,7 +16,15 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <nss_files.h>
+/*
+ * MAINTENANCE: This file tracks glibc nss/nss_readline.c
+ * Current base: glibc 2.43
+ *
+ * Changes:
+ *  - removed include nss_files.h
+*/
+
+/* include <nss_files.h> */
 
 #include <ctype.h>
 #include <errno.h>

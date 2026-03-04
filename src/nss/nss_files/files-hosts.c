@@ -16,12 +16,20 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+/*
+ * MAINTENANCE: This file tracks glibc nss/nss_files/files-parse.c.
+ * Current base: glibc 2.43
+ *
+ * Changes:
+ *  - removed include resolv/resolv-internal.h
+ */
+
 #include <assert.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <arpa/nameser.h>
 #include <netdb.h>
-#include <resolv/resolv-internal.h>
+/* include <resolv/resolv-internal.h> */
 #include <scratch_buffer.h>
 #include <alloc_buffer.h>
 #include <nss.h>

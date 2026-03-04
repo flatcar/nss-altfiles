@@ -1,0 +1,7 @@
+{
+    global:
+        _nss_altfiles_*;
+
+    local:
+        *;
+};

@@ -16,8 +16,16 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+/*
+ * MAINTENANCE: This file tracks glibc malloc/scratch_buffer_grow.c
+ * Current base: glibc 2.43
+ *
+ * Changes:
+ *  - removed include libc-config.h
+ */
+
 #ifndef _LIBC
-# include <libc-config.h>
+/* include <libc-config.h> */
 #endif
 
 #include <scratch_buffer.h>

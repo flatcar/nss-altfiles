@@ -16,24 +16,41 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+/*
+ * MAINTENANCE: This file tracks glibc nss/nss_files/files-parse.c.
+ * Current base: glibc 2.43
+ *
+ * Changes:
+ *  - removed include nss_files.h
+ *  - removed include stdio_ext
+ *  - added include stdio
+ *  - change "/etc/" to ALTFILES_DATADIR
+ *  - add struct parser_data; for extern to build
+ *  - add extern _nss_files_parse_grent
+ */
+
 #include <errno.h>
 #include <grp.h>
 #include <nss.h>
-#include <stdio_ext.h>
+/* include <stdio_ext.h> */
+#include <stdio.h>
 #include <string.h>
 #include <sys/param.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <scratch_buffer.h>
 #include <nss.h>
-#include <nss_files.h>
+/* include <nss_files.h> */
+
+struct parser_data;
+extern int _nss_files_parse_grent (char *line, void *generic_result, struct parser_data *data, size_t datalen, int *errnop );
 
 enum nss_status
 _nss_files_initgroups_dyn (const char *user, gid_t group, long int *start,
 			   long int *size, gid_t **groupsp, long int limit,
 			   int *errnop)
 {
-  FILE *stream = __nss_files_fopen ("/etc/group");
+  FILE *stream = __nss_files_fopen (ALTFILES_DATADIR "group");
   if (stream == NULL)
     {
       *errnop = errno;

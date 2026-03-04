@@ -16,15 +16,38 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+
+/*
+ * MAINTENANCE: This file tracks glibc nss/nss_files/files-XXXX.c.
+ * Current base: glibc 2.43
+ *
+ * The sed expressions have an extra ` ` to avoid removing
+ * the documented changes as a part of the update
+ *
+ * Changes:
+ *  - removed include libc-lock.h
+ *  - removed include nsswitch.h
+ *  - removed include nss_files.h
+ *  - removed include kernel-features.h
+ *  - sed -e 's|" /etc/"|ALTFILES_DATADIR|'
+ *  - sed -e 's/C ONCAT(_nss_files_end/ALTFILES_CONCAT2(end/'
+ *  - sed -e 's/C ONCAT (_nss_files_end/ALTFILES_CONCAT2(end/'
+ *  - sed -e 's/C ONCAT(_nss_files_get/ALTFILES_CONCAT2(get/'
+ *  - sed -e 's/C ONCAT (_nss_files_get/ALTFILES_CONCAT2(get/'
+ *  - sed -e 's/C ONCAT(_nss_files_set/ALTFILES_CONCAT2(set/'
+ *  - sed -e 's/C ONCAT (_nss_files_set/ALTFILES_CONCAT2(set/'
+ *  - sed -e 's/_ nss_files_get##name##_r/ALTFILES_CONCAT1(get##name##_r)/'
+ */
+
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <libc-lock.h>
-#include "nsswitch.h"
-#include <nss_files.h>
+/* include <libc-lock.h> */
+/* include "nsswitch.h" */
+/* include <nss_files.h> */
 
-#include <kernel-features.h>
+/* include <kernel-features.h> */
 
 /* These symbols are defined by the including source file:
 
@@ -39,7 +62,7 @@
 
 #define ENTNAME_r	CONCAT(ENTNAME,_r)
 
-#define DATAFILE	"/etc/" DATABASE
+#define DATAFILE	ALTFILES_DATADIR DATABASE
 
 #ifdef NEED_H_ERRNO
 # include <netdb.h>
@@ -87,14 +110,14 @@ internal_setent (FILE **stream)
 
 /* Thread-safe, exported version of that.  */
 enum nss_status
-CONCAT(_nss_files_set,ENTNAME) (int stayopen)
+ALTFILES_CONCAT2(set,ENTNAME) (int stayopen)
 {
   return __nss_files_data_setent (CONCAT (nss_file_, ENTNAME), DATAFILE);
 }
-libc_hidden_def (CONCAT (_nss_files_set,ENTNAME))
+libc_hidden_def (ALTFILES_CONCAT2(set,ENTNAME))
 
 enum nss_status
-CONCAT(_nss_files_end,ENTNAME) (void)
+ALTFILES_CONCAT2(end,ENTNAME) (void)
 {
   return __nss_files_data_endent (CONCAT (nss_file_, ENTNAME));
 }
@@ -162,7 +185,7 @@ internal_getent (FILE *stream, struct STRUCTURE *result,
 
 /* Return the next entry from the database file, doing locking.  */
 enum nss_status
-CONCAT(_nss_files_get,ENTNAME_r) (struct STRUCTURE *result, char *buffer,
+ALTFILES_CONCAT2(get,ENTNAME_r) (struct STRUCTURE *result, char *buffer,
 				  size_t buflen, int *errnop H_ERRNO_PROTO)
 {
   /* Return next entry in host file.  */
@@ -181,7 +204,7 @@ CONCAT(_nss_files_get,ENTNAME_r) (struct STRUCTURE *result, char *buffer,
   __nss_files_data_put (data);
   return status;
 }
-libc_hidden_def (CONCAT (_nss_files_get,ENTNAME_r))
+libc_hidden_def (ALTFILES_CONCAT2(get,ENTNAME_r))
 
 /* Macro for defining lookup functions for this file-based database.
 
@@ -197,7 +220,7 @@ libc_hidden_def (CONCAT (_nss_files_get,ENTNAME_r))
 
 #define DB_LOOKUP(name, db_char, keysize, keypattern, break_if_match, proto...)\
 enum nss_status								      \
-_nss_files_get##name##_r (proto,					      \
+ALTFILES_CONCAT1(get##name##_r) (proto,					      \
 			  struct STRUCTURE *result, char *buffer,	      \
 			  size_t buflen, int *errnop H_ERRNO_PROTO)	      \
 {									      \
@@ -219,4 +242,4 @@ _nss_files_get##name##_r (proto,					      \
 									      \
   return status;							      \
 }									      \
-libc_hidden_def (_nss_files_get##name##_r)
+libc_hidden_def (ALTFILES_CONCAT1(get##name##_r))
