@@ -16,25 +16,31 @@ if [[ $# -ne 1 ]] ; then
 	exit 1
 fi 1>&2
 
-PV_BIN=$(type -P pv)
-if [[ -n ${PV_BIN} ]] ; then
-	pvcat () { "${PV_BIN}" -p -e -a "$1"; }
-else
-	pvcat () { cat "$1"; }
-fi
-
 version=$1
 
 if [[ ! -d glibc-${version} ]] ; then
 	if [[ ! -r glibc-${version}.tar.xz ]] ; then
+		echo "fetching ${DIST_URL_BASE}/glibc-${version}.tar.xz ..."
 		wget "${DIST_URL_BASE}/glibc-${version}.tar.xz"
 	fi
 	echo "Unpacking glibc-${version}.tar.xz ..."
-	pvcat glibc-${version}.tar.xz | tar -xJf -
+	tar -xJf glibc-${version}.tar.xz
 fi
 
-for dst_file in src/*/*.c ; do
-	dst_file_name=${dst_file##*/}
-	src_file=$(find "glibc-${version}" -name "${dst_file_name}")
-	cp -v "${src_file}" "${dst_file}"
-done
+while IFS= read -r -d '' dst_file; do
+    dst_file_name=${dst_file##*/}
+
+    mapfile -t matches < <(find "glibc-${version}" -name "${dst_file_name}")
+
+    if (( ${#matches[@]} == 0 )); then
+        echo "Skipping ${dst_file_name} (no glibc counterpart)"
+        continue
+    fi
+
+    if (( ${#matches[@]} > 1 )); then
+        echo "Skipping ${dst_file_name} (ambiguous: ${matches[*]})" >&2
+        continue
+    fi
+
+    cp -v "${matches[0]}" "${dst_file}"
+done < <(find src/ \( -name '*.c' -o -name '*.h' \) -print0)
