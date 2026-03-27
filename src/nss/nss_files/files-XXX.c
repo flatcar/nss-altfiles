@@ -21,22 +21,14 @@
  * MAINTENANCE: This file tracks glibc nss/nss_files/files-XXXX.c.
  * Current base: glibc 2.43
  *
- * The sed expressions have an extra ` ` to avoid removing
- * the documented changes as a part of the update
- *
  * Changes:
  *  - removed include libc-lock.h
  *  - removed include nsswitch.h
  *  - removed include nss_files.h
  *  - removed include kernel-features.h
- *  - sed -e 's|" /etc/"|ALTFILES_DATADIR|'
- *  - sed -e 's/C ONCAT(_nss_files_end/ALTFILES_CONCAT2(end/'
- *  - sed -e 's/C ONCAT (_nss_files_end/ALTFILES_CONCAT2(end/'
- *  - sed -e 's/C ONCAT(_nss_files_get/ALTFILES_CONCAT2(get/'
- *  - sed -e 's/C ONCAT (_nss_files_get/ALTFILES_CONCAT2(get/'
- *  - sed -e 's/C ONCAT(_nss_files_set/ALTFILES_CONCAT2(set/'
- *  - sed -e 's/C ONCAT (_nss_files_set/ALTFILES_CONCAT2(set/'
- *  - sed -e 's/_ nss_files_get##name##_r/ALTFILES_CONCAT1(get##name##_r)/'
+ *  - sed -i -r "s:\"/etc/\":ALTFILES_DATADIR:g"
+ *  - sed -i -r 's/CONCAT *\(_nss_files_(\w+)/ALTFILES_CONCAT2(\1/g'
+ *  - sed -i -r 's/_nss_files_(\w+##name##_r)/ALTFILES_CONCAT1(\1)/g'
  */
 
 #include <stdio.h>
