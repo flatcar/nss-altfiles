@@ -121,7 +121,7 @@ ALTFILES_CONCAT2(end,ENTNAME) (void)
 {
   return __nss_files_data_endent (CONCAT (nss_file_, ENTNAME));
 }
-libc_hidden_def (CONCAT (_nss_files_end,ENTNAME))
+libc_hidden_def (ALTFILES_CONCAT2(end,ENTNAME))
 
 
 /* Parsing the database file into `struct STRUCTURE' data structures.  */
