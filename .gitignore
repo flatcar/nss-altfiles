@@ -5,3 +5,4 @@ nss-altfiles-config
 glibc-*/
 glibc-*.tar.xz
 config.mk
+/src/compat/altfiles_symbols.map

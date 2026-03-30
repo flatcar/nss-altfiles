@@ -29,6 +29,11 @@ MODULE_NAME ?= altfiles
 DATADIR ?= $(PREFIX)/lib/
 
 # ---------------------------------------------------------------------------
+# Build tools
+# ---------------------------------------------------------------------------
+SED ?= sed
+
+# ---------------------------------------------------------------------------
 # Feature flags set by configure or on the command line.
 #
 # pwd, grp, and initgroups are on by default; all others are opt-in.
@@ -120,8 +125,9 @@ override CFLAGS := $(_REQ_CFLAGS) $(CFLAGS)
 #
 # Default to rational LD_FLAGS if none are provided.
 # ---------------------------------------------------------------------------
+SYMBOLS_MAP := src/compat/altfiles_symbols.map
 _SO_LDFLAGS := -Wl,-soname,$(TARGET)
-_SO_LDFLAGS += -Wl,--version-script=src/compat/altfiles_symbols.map
+_SO_LDFLAGS += -Wl,--version-script=$(SYMBOLS_MAP)
 _REQ_LDFLAGS += -Wl,--gc-sections -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now
 
 LDFLAGS ?=
@@ -135,8 +141,11 @@ override LDFLAGS := $(_REQ_LDFLAGS) $(LDFLAGS)
 
 all: $(TARGET) nss-altfiles-config
 
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(_SO_LDFLAGS) -shared -o $@ $^
+$(SYMBOLS_MAP): $(SYMBOLS_MAP).in
+	$(SED) "s/@@MODULE_NAME@@/$(MODULE_NAME)/g" $< > $@
+
+$(TARGET): $(SYMBOLS_MAP) $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(_SO_LDFLAGS) -shared -o $@ $(filter %.o,$^)
 
 nss-altfiles-config: src/nss-altfiles-config.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
@@ -153,7 +162,7 @@ check:
 
 clean:
 	find src -name '*.o' -delete
-	$(RM) $(TARGET) nss-altfiles-config
+	$(RM) $(SYMBOLS_MAP) $(TARGET) nss-altfiles-config
 
 distclean: clean
 	$(RM) config.mk

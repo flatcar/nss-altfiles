@@ -1,6 +1,6 @@
 {
     global:
-        _nss_altfiles_*;
+        _nss_@@MODULE_NAME@@_*;
 
     local:
         *;
