@@ -1,0 +1,69 @@
+# Updating to latest glibc source
+
+When rebasing on a new glibc version, update this and review every
+shim marked "Based on" against the corresponding upstream source.
+The canonical comparison point is the glibc git tag for the release
+being targeted:
+
+  https://sourceware.org/git/?p=glibc.git
+
+Shims for glibc-internal symbols used in .c files copied carefully
+from glibc.  The goal is to keep those source files as close to
+upstream as possible so that diffs against new glibc versions stay
+small and auditable.
+
+Files with a diff from gcc must have comments explaining what is
+changed.
+
+The compat headers must be reviewed each time you rebase.
+
+## Design rules for compat shim
+
+ 0. _GNU_SOURCE is assumed to have been defined before the header is
+    included.  The build system is responsible for setting it.
+
+ 1. One shim per internal symbol.  No logic beyond what is needed to
+    satisfy the public-API equivalent.  This is a shim, not an API spec.
+
+ 2. Shims are either preprocessor macros (for simple token substitution
+    or type-parameterised operations) or static inline functions (for
+    anything with a fixed, concrete signature).
+
+ 3. Public API only.  Every shim must compile against a stock glibc
+    installation; no reliance on glibc private headers unless vendored
+    into this source tree.  In which case see the rebasing rules.
+
+ 4. Baseline: glibc >= 2.18, Linux only.  Shims may freely use
+    Linux/glibc extensions (fmemopen, fgetgrent_r, O_CLOEXEC "re" mode,
+    __builtin_expect, __alignof__) that are stable at that baseline.
+
+## How to add a new shim
+
+ a. Identify the glibc-internal symbol.
+
+ b. Find the smallest public-API surface that reproduces its contract.
+    Document any deliberate omissions: operations the upstream code does
+    not actually call, error cases that cannot arise, etc.
+
+ c. Place the shim in the appropriate section below.  Follow the comment
+    style already present: one block comment per shim or per logical
+    group, citing the internal header or symbol being replaced.
+
+ d. If the shim is a struct with associated functions, keep the struct
+    definition and all its functions together in one block.
+
+ glibc's own code uses internal (non-PLT) names to call functions within
+ the same shared library.  Outside glibc the PLT overhead is negligible
+ and the public name is the correct target for those calls.
+
+## When upgrading the glibc base version
+
+ For each shim, check:
+  - Has the internal symbol's contract changed?
+  - Is a previously private symbol now public API?  (Remove the shim.)
+  - Does the upstream .c file call new internal symbols not yet shimmed?
+    (Add shims for them before attempting to compile.)
+
+ Pay particular attention to the __nss_files_data_* section; it encodes
+ the most logic and diverges intentionally from the upstream structure.
+ See that section's comment block for details.

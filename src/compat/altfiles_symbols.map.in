@@ -1,0 +1,7 @@
+{
+    global:
+        _nss_@@MODULE_NAME@@_*;
+
+    local:
+        *;
+};
