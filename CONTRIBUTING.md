@@ -4,10 +4,12 @@ Whether you're fixing a bug, adding a feature, or improving docs — we apprecia
 
 For more detailed guidelines (finding issues, community meetings, PR lifecycle, commit message format, and more), check out the [main Flatcar CONTRIBUTING guide](https://github.com/flatcar/Flatcar/blob/main/CONTRIBUTING.md).
 
+If you want to file an issue for any Flatcar repository, please use the [central Flatcar issue tracker](https://github.com/flatcar/Flatcar/issues).
+
 ---
 
 ## Repository Specific Guidelines
 
-### Updating Source Files
+Any guidelines specific to this repository that are not covered in the main contribution guide will be listed here.
 
-This repository includes source files sourced from glibc. When updating these files to a new glibc version, refer to the [`UPDATES`](./UPDATES) file.
+<!-- Add repo-specific guidelines below this line -->
