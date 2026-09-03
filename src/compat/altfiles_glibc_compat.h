@@ -121,6 +121,10 @@
  * of the function body.
  *
  * Outside glibc, hidden visibility is handled by the linker.
+ *
+ * __always_inline and __errordecl are just glibc's names for plain
+ * GCC/Clang attributes (always_inline, error), so they are defined
+ * directly below rather than emulated.
  */
 #define attribute_hidden __attribute__ ((visibility ("hidden")))
 #define attribute_unused __attribute__ ((unused))
@@ -128,6 +132,12 @@
 #define __glibc_unlikely(cond) __builtin_expect ((cond), 0)
 #define libc_hidden_proto(sym)
 #define libc_hidden_def(sym)
+#ifndef __always_inline
+#define __always_inline inline __attribute__ ((always_inline))
+#endif
+#ifndef __errordecl
+#define __errordecl(name, msg) __attribute__ ((error (msg))) extern void name (void)
+#endif
 #define weak_alias(sym, other)
 
 /* ============================================================
